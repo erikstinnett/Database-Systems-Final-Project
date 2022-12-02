@@ -43,11 +43,11 @@ for i in movie_data:
     movieGenre = i.find('span', class_ = 'genre').text.strip()
     genre.append(movieGenre)
 
-conn = sqlite3.connect('testDBProject2.db')
+conn = sqlite3.connect('testDBProject.db')
 c = conn.cursor()
 
-c.execute('''DROP TABLE film''')
-c.execute('''DROP TABLE actors''')
+c.execute('''DROP TABLE IF EXISTS film''')
+c.execute('''DROP TABLE IF EXISTS actors''')
 c.execute('''CREATE TABLE film(Title TEXT, Date TEXT, Runtime INT, UserRating INT, MetaScore INT, Genre text)''')
 c.execute('''CREATE TABLE actors(Fname TEXT, Lname TEXT, Acts_In TEXT, Awards TEXT)''')
 for i in range(90):
