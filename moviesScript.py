@@ -1,3 +1,6 @@
+# Scraping movies from IMDB
+# Written by Erik Stinnett
+
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -8,52 +11,47 @@ response = requests.get(url)
 soup = BeautifulSoup(response.content, 'html.parser')
 
 # Scraping title, runtime, rating, metascore, votes, gross
-
 movieTitle = []
 runTime = []
 genre = []
 relDate = []
 userRating = []
 metaScore = []
-filmID = []
 
-movie_data = soup.findAll('div', attrs = {'class': 'lister-item mode-advanced'})
+def scrapeMovieData():
 
-for i in movie_data:
-    name = i.h3.a.text
-    # Title
-    movieTitle.append(name) 
+    movie_data = soup.findAll('div', attrs = {'class': 'lister-item mode-advanced'})
 
-    date = i.h3.find('span', class_ = 'lister-item-year text-muted unbold').text.replace('(','').replace(')','')
-    # Release Date
-    relDate.append(date)
+    for i in movie_data:
+        name = i.h3.a.text
+        # Title
+        movieTitle.append(name) 
 
-    time = i.p.find('span', class_ = 'runtime').text.replace('min','')
-    # Runtime
-    runTime.append(time)
+        date = i.h3.find('span', class_ = 'lister-item-year text-muted unbold').text.replace('(','').replace(')','')
+        # Release Date
+        relDate.append(date)
 
-    rating = i.find('div', class_ = 'inline-block ratings-imdb-rating').text.strip()
-    # user rating
-    userRating.append(rating)
+        time = i.p.find('span', class_ = 'runtime').text.replace('min','')
+        # Runtime
+        runTime.append(time)
 
-    meta = i.find('span', class_ = 'metascore').text.strip() if i.find('span', class_ = 'metascore') else 'N/A'
-    # Metascore
-    metaScore.append(meta)
+        rating = i.find('div', class_ = 'inline-block ratings-imdb-rating').text.strip()
+        # user rating
+        userRating.append(rating)
 
-    movieGenre = i.find('span', class_ = 'genre').text.strip()
-    genre.append(movieGenre)
+        meta = i.find('span', class_ = 'metascore').text.strip() if i.find('span', class_ = 'metascore') else 'N/A'
+        # Metascore
+        metaScore.append(meta)
 
-conn = sqlite3.connect('testDBProject.db')
-c = conn.cursor()
+        movieGenre = i.find('span', class_ = 'genre').text.strip()
+        genre.append(movieGenre)
 
-c.execute('''DROP TABLE IF EXISTS film''')
-c.execute('''DROP TABLE IF EXISTS actors''')
-c.execute('''CREATE TABLE film(Title TEXT, Date TEXT, Runtime INT, UserRating INT, MetaScore INT, Genre text)''')
-c.execute('''CREATE TABLE actors(Fname TEXT, Lname TEXT, Acts_In TEXT, Awards TEXT)''')
-for i in range(90):
-    c.execute('''INSERT INTO film VALUES(?,?,?,?,?,?)''', (movieTitle[i], relDate[i], runTime[i], userRating[i], metaScore[i], genre[i]))
-    conn.commit()
-c.execute('''SELECT Title from film''')
-results = "\n".join(str(movie) for movie in c.fetchall())   # Splits list into lines of movies
+def writeMoviesToDatabase():
+    conn = sqlite3.connect('testDBProject.db')
+    c = conn.cursor()
 
-print(results)
+    c.execute('''DROP TABLE IF EXISTS film''')
+    c.execute('''CREATE TABLE film(Title TEXT, Date TEXT, Runtime INT, UserRating INT, MetaScore INT, Genre text)''')
+    for i in range(90):
+        c.execute('''INSERT INTO film VALUES(?,?,?,?,?,?)''', (movieTitle[i], relDate[i], runTime[i], userRating[i], metaScore[i], genre[i]))
+        conn.commit()
