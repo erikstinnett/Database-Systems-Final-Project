@@ -1,5 +1,6 @@
 # Scraping actor/actress data from IMDB
 # Written by Erik Stinnett
+''' Not used for project. Does not match with Films table'''
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup

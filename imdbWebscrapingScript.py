@@ -1,11 +1,11 @@
 # Driver function
 # Written by Erik Stinnett
-from actorsScript import *
+from actors2 import *
 from moviesScript import *
 
 
 if __name__ == "__main__":
     scrapeMovieData()
-    scrapeActorData()
+    scrapeActorData_actors2()
     writeMoviesToDatabase()
-    writeActorsToDatabase()
+    writeActorsToDatabase_actors2()
